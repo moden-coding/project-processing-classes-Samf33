@@ -7,8 +7,10 @@ public class Health {
     private ArrayList<PImage> list;
     private PApplet parent;  // Reference to the PApplet instance
     private PImage img;
+    private boolean isEmpty;
 
     public Health(PApplet parent, PImage img, int initialHearts) {
+        isEmpty = false;
         this.parent = parent;
         this.img = img;
         this.list = new ArrayList<>();
@@ -24,7 +26,9 @@ public class Health {
         // Note: Make sure img.copy() works as expected for your use case
         list.add(img.copy());
     }
-
+    public boolean isEmpty() {
+        return isEmpty;
+    }
     public void place() {
         for (int i = 0; i < list.size(); i++) {
             PImage currentImg = list.get(i);
@@ -32,14 +36,19 @@ public class Health {
         }
     }
     public void remove() {
-        if (list.size() > 1) {
+        if (list.size() > 0) {
         list.remove(list.size() - 1);
-        } else {
-            reset();
+        } 
+        if (list.size() == 0) {
+            isEmpty = true;
         }
     }
+    public int getHealth() {
+        return list.size();
+    }
     public void reset() {
-        for (int i = 0; i < 2; i++) {
+        isEmpty = false;
+        for (int i = 0; i < 3; i++) {
             add();
         }
     }

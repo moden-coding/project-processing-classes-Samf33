@@ -1,18 +1,32 @@
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import processing.core.*;
 
 public class Enemies {
     private ArrayList<RangedEnemy> rangedEnemies;
     private ArrayList<Enemy> enemies;
     private PApplet p;
-    private ArrayList <Enemy> inactive;
+    private ArrayList<Enemy> inactive;
     private int helper;
+    private ArrayList<RangedEnemy> inactiveR;
+
     public Enemies(PApplet p) {
+        inactiveR = new ArrayList<>();
         helper = 0;
         rangedEnemies = new ArrayList<>();
         enemies = new ArrayList<>();
         this.p = p;
         inactive = new ArrayList<>();
+    }
+
+    public void clear() {
+        List<Enemy> enemiesToRemove = new ArrayList<>(enemies);
+        for (Enemy enemy : enemiesToRemove) {
+            enemies.remove(enemy);
+            inactive.add(enemy);
+        }
     }
 
     public void addEnemy() {
@@ -26,11 +40,13 @@ public class Enemies {
             inactive.remove(0);
         }
     }
+
     public void addRangedEnemy() {
         RangedEnemy ranged;
         ranged = new RangedEnemy(10, p);
         rangedEnemies.add(ranged);
     }
+
     public void startRangedEnemies(Ellipse player) {
         for (RangedEnemy r : rangedEnemies) {
             r.move();
@@ -38,6 +54,7 @@ public class Enemies {
             r.display();
         }
     }
+
     public boolean collideWithBullets(Ellipse player) {
         for (RangedEnemy r : rangedEnemies) {
             if (r.col(player)) {
@@ -59,9 +76,11 @@ public class Enemies {
         }
         return false; // No collision detected
     }
+
     public boolean collideWithRanged(Ellipse player) {
         for (int i = 0; i < rangedEnemies.size(); i++) {
-                float distance = PApplet.dist(player.getX(), player.getY(), rangedEnemies.get(i).getX(), rangedEnemies.get(i).getY());
+            float distance = PApplet.dist(player.getX(), player.getY(), rangedEnemies.get(i).getX(),
+                    rangedEnemies.get(i).getY());
             float combinedRadius = 25 + rangedEnemies.get(i).getWidth() / 2;
 
             if (distance < combinedRadius) {
@@ -70,13 +89,17 @@ public class Enemies {
         }
         return false; // No collision detected
     }
+
     public void shoot(Ellipse player) {
-        if (helper >= rangedEnemies.size())  {
-            helper = 0;
+        if (rangedEnemies.size() > 0) {
+            if (helper >= rangedEnemies.size()) {
+                helper = 0;
+            }
+            rangedEnemies.get(helper).shoot(player);
+            helper++;
         }
-        rangedEnemies.get(helper).shoot(player);
-        helper++;
     }
+
     public void start() {
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).start();
