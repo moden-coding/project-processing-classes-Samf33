@@ -1,4 +1,3 @@
-import java.io.IOError;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
@@ -7,30 +6,30 @@ import java.util.Scanner;
 import processing.core.*;
 
 public class App extends PApplet {
-    Ellipse player;
-    int xPos = 500;
-    int yPos = 300;
-    int xVel = 0;
-    int yVel = 0;
-    Health health;
-    Rectangle gameOver;
-    PImage heart;
-    PImage background;
-    Enemies enemies;
-    int timer = 0;
-    int randomNum = 110;
-    RangedEnemy range;
-    int hs = 0;
-    int score = 0;
-    boolean scoreHelper = false;
-    int initialHS = 0;
-    boolean invince;
+    Ellipse player; //player
+    int xPos = 500; //starting xPos
+    int yPos = 300; //starting yPos
+    int xVel = 0; // x velocity
+    int yVel = 0; //y velocity
+    Health health; // health bar
+    Rectangle gameOver; // play again button
+    PImage heart; // heart itself
+    PImage background; // background
+    Enemies enemies; // enemy handling
+    int timer = 0; // timer
+    int randomNum = 110; // random number used for shooting
+    int hs = 0; // highscore
+    int score = 0; //initial score
+    boolean scoreHelper = false; //helps calculate difference between score and high score
+    int initialHS = 0; //also helps score calculation
+    boolean invince; // protection
 
     public static void main(String[] args) {
         PApplet.main("App");
     }
 
     public void setup() {
+        //initializing everything, (rectangles, images, player, enemies, health, and it adds two ranged enemies)
         gameOver = new Rectangle(this, 200, 275, 400, 50, 200, 100, 100);
         background = loadImage("potential-image-1.jpeg");
         background.resize(800, 600);
@@ -38,11 +37,10 @@ public class App extends PApplet {
         heart = loadImage("test.png");
         heart.resize(50, 50);
         enemies = new Enemies(this);
-        range = new RangedEnemy(10, this);
         health = new Health(this, heart, 3);
         enemies.addRangedEnemy();
         enemies.addRangedEnemy();
-        read();
+        read(); //reads high score before it is overwritten
 
     }
 
@@ -51,14 +49,15 @@ public class App extends PApplet {
     }
 
     public void draw() {
-        background(background);
-        spawnProc();
-        gameOver();
-        displayScores();
-        write();
-        addhs();
-        health.place();
-        if (!(health.isEmpty())) {
+        // displaying everything
+        background(background); //idisplaying background
+        spawnProc(); //checking for spawn protection
+        gameOver(); //checking for game over
+        displayScores(); //displaying scores
+        write(); // writing high score
+        addhs(); //increment score
+        health.place(); //placing health bar
+        if (!(health.isEmpty())) { //only add enemies and show them if you have health
         enemies.startRangedEnemies(player);
         addEnemies();
         enemies.start();
@@ -70,21 +69,21 @@ public class App extends PApplet {
     }
 
     public void gameOver() {
-        if (health.isEmpty()) {
-            removeEnemies();
-            player.setFill(0, 255, 0);
-            invince = true;
-            timer = 0;
-            scoreHelper = false;
-            int diff = initialHS - score;
-            gameOver.display();
+        if (health.isEmpty()) { //game over check
+            removeEnemies(); //remove the enemies
+            player.setFill(0, 255, 0); // make the player green to show protection
+            invince = true; //protect the player
+            timer = 0; //reset timer
+            scoreHelper = false; //reset
+            int diff = initialHS - score; //calc difference
+            gameOver.display(); // show button
             textAlign(CENTER, CENTER);
             fill(98, 23, 21);
             textSize(40);
-            text("Try again?", 400, 295);
+            text("Try again?", 400, 295); //button text
             textSize(25);
-            if (diff >= 0) {
-                fill(69, 24, 24);
+            if (diff >= 0) { //post screen text depending on whether or not you beat your high score
+                fill(69, 24, 24); 
                 text("You survived for " + score + " seconds. That is " + diff
                         + " seconds from your high score! play again and try to improve next time.", 50, 100, 750, 200);
                         
@@ -99,6 +98,7 @@ public class App extends PApplet {
     }
 
     public void mousePressed() {
+        //checking for game over button clicked and ressetting health and score if true
         if (health.isEmpty())
             if (mouseX > gameOver.getX() && mouseX < gameOver.getX() + gameOver.getWidth() &&
                     mouseY > gameOver.getY() && mouseY < gameOver.getY() + gameOver.getHeight()) {
@@ -109,10 +109,11 @@ public class App extends PApplet {
     }
 
     public void addhs() {
+        //increment score and adjust high score accordingly
         if (timer % 60 == 0 && timer != 0 && !(health.isEmpty())) {
             score += 1;
             if (score > hs) {
-                if (scoreHelper == false) {
+                if (scoreHelper == false) { //initial hs helps find difference between high score and score when score > than hs
                     initialHS = hs;
                     scoreHelper = true;
                 }
@@ -124,6 +125,7 @@ public class App extends PApplet {
     }
 
     public void displayScores() {
+        //displaying scores if you aren't dead
         if (!(health.isEmpty())) {
             fill(100, 28, 29);
             textSize(30);
@@ -132,15 +134,20 @@ public class App extends PApplet {
         }
     }
     public void removeEnemies() {
-        enemies.clear();
+        enemies.clear(); //removed all non ranged enemies
     }
     public void spawnProc() {
-        if (timer % 100 == 0 && timer != 0 && timer < 150) {
+        //spawn protection removal
+        if (timer % 100 == 0 && timer != 0 && timer < 102 && health.sizeIs(3)) {
             player.setFill(0);
             invince = false;
         }
+        if (timer % 200 == 0 && !(health.sizeIs(3)) && invince) {
+            invince =  false;
+        }
     }
     public void addEnemies() {
+        //adding normal enemies and shooting ranged enemies on a random timer
         if (!(health.isEmpty())) {
         if (timer % 250 == 0 && !(health.isEmpty())) {
             enemies.addEnemy();
@@ -153,6 +160,7 @@ public class App extends PApplet {
     }
 
     public void keyPressed() {
+        //movement, pretty basic
         if (keyCode == RIGHT) {
             xVel = 10;
         }
@@ -168,19 +176,22 @@ public class App extends PApplet {
     }
 
     public void collision() {
+        //collision with walls if you aren't invincible
         if (player.getX() >= 800 - player.getWidth() || player.getX() <= 0 || player.getY() < 0
                 || player.getY() > 600 && !(invince)) {
             health.remove();
             reset();
         }
+        //collision with enemies if you aren't invincible
         if (enemies.collide(player) && !(invince)) {
             health.remove();
             reset();
-        }
+        }//collision with ranged enemies if you aren't invincible
         if (enemies.collideWithRanged(player) && !(invince)) {
             health.remove();
             reset();
         }
+        //collision with bullets if you aren't invincible
         if (enemies.collideWithBullets(player) && !(invince)) {
             health.remove();
             reset();
@@ -189,6 +200,7 @@ public class App extends PApplet {
     }
 
     public void keyReleased() {
+        //stop if you stop moving
         if (keyCode == RIGHT) {
             xVel = 0;
         }
@@ -204,11 +216,14 @@ public class App extends PApplet {
     }
 
     public void reset() {
-        player.setX(100);
-        player.setY(100);
+        //gives a small amount of invincibility for QOL and resets you to  middle
+        invince = true;
+        timer = timer + timer % 20 + 1;
+        player.setX(400);
+        player.setY(300);
     }
 
-    public void read() {
+    public void read() { //read high score
         try (Scanner read = new Scanner(Paths.get("HS.txt"))) {
             if (read.hasNextLine()) {
                 hs = Integer.valueOf(read.nextLine());
@@ -219,6 +234,7 @@ public class App extends PApplet {
     }
 
     public void write() {
+        //write high score
         try (PrintWriter pw = new PrintWriter("HS.txt")) {
             pw.println(hs);
             pw.flush();
