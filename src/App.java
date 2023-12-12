@@ -2,11 +2,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Scanner;
+import processing.sound.*;
 
 import processing.core.*;
 
 public class App extends PApplet {
     Ellipse player; //player
+    SoundFile bgMusic;
+    SoundFile playerHit;
     int xPos = 500; //starting xPos
     int yPos = 300; //starting yPos
     int xVel = 0; // x velocity
@@ -32,6 +35,11 @@ public class App extends PApplet {
         //initializing everything, (rectangles, images, player, enemies, health, and it adds two ranged enemies)
         gameOver = new Rectangle(this, 200, 275, 400, 50, 200, 100, 100);
         background = loadImage("potential-image-1.jpeg");
+        playerHit = new SoundFile(this, "playerHit.mp3");
+        bgMusic = new SoundFile(this, "bgMusic.mp3");
+        bgMusic.play();
+        bgMusic.loop();
+        bgMusic.amp(0.2f);
         background.resize(800, 600);
         player = new Ellipse(this, xPos, yPos, 50, 50, 0);
         heart = loadImage("test.png");
@@ -40,7 +48,7 @@ public class App extends PApplet {
         health = new Health(this, heart, 3);
         enemies.addRangedEnemy();
         enemies.addRangedEnemy();
-        read(); //reads high score before it is overwritten
+        initialSetup();
 
     }
 
@@ -50,14 +58,15 @@ public class App extends PApplet {
 
     public void draw() {
         // displaying everything
+        write(); // writing high score
         background(background); //idisplaying background
         spawnProc(); //checking for spawn protection
         gameOver(); //checking for game over
         displayScores(); //displaying scores
-        write(); // writing high score
         addhs(); //increment score
         health.place(); //placing health bar
         if (!(health.isEmpty())) { //only add enemies and show them if you have health
+        checkRanged();
         enemies.startRangedEnemies(player);
         addEnemies();
         enemies.start();
@@ -67,7 +76,9 @@ public class App extends PApplet {
         timer += 1;
         }
     }
-
+    public void initialSetup() {
+        read(); //reads high score before it is overwritten
+    }
     public void gameOver() {
         if (health.isEmpty()) { //game over check
             removeEnemies(); //remove the enemies
@@ -94,6 +105,11 @@ public class App extends PApplet {
                         + " seconds past your high score! Play again and keep raising that high score!", 50, 100, 750,
                         200);
             }
+        }
+    }
+    public void checkRanged() {
+        if(enemies.getNumRanged() < 2 && timer % 40 == 0) {
+            enemies.addRangedEnemy();
         }
     }
 
@@ -142,7 +158,7 @@ public class App extends PApplet {
             player.setFill(0);
             invince = false;
         }
-        if (timer % 200 == 0 && !(health.sizeIs(3)) && invince) {
+        if (timer % 60 == 0 && !(health.sizeIs(3)) && invince) {
             invince =  false;
         }
     }
@@ -184,15 +200,18 @@ public class App extends PApplet {
         }
         //collision with enemies if you aren't invincible
         if (enemies.collide(player) && !(invince)) {
+            playerHit.play();
             health.remove();
             reset();
         }//collision with ranged enemies if you aren't invincible
         if (enemies.collideWithRanged(player) && !(invince)) {
+            playerHit.play();
             health.remove();
             reset();
         }
         //collision with bullets if you aren't invincible
         if (enemies.collideWithBullets(player) && !(invince)) {
+            playerHit.play();
             health.remove();
             reset();
         }
@@ -218,7 +237,6 @@ public class App extends PApplet {
     public void reset() {
         //gives a small amount of invincibility for QOL and resets you to  middle
         invince = true;
-        timer = timer + timer % 20 + 1;
         player.setX(400);
         player.setY(300);
     }

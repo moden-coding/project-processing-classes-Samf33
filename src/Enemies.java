@@ -43,9 +43,11 @@ public class Enemies {
 
     // Method to add a ranged enemy to the ranged enemies list
     public void addRangedEnemy() {
-        RangedEnemy ranged;
-        ranged = new RangedEnemy(10, p);
+        RangedEnemy ranged = new RangedEnemy(10, p);
         rangedEnemies.add(ranged);
+    }
+    public int getNumRanged() {
+        return rangedEnemies.size();
     }
 
     // Method to move and display all ranged enemies
@@ -91,6 +93,7 @@ public class Enemies {
 
             // Check if the distance between the player and the ranged enemy is less than the combined radius
             if (distance < combinedRadius) {
+                rangedEnemies.remove(i);
                 return true; // Collision detected
             }
         }

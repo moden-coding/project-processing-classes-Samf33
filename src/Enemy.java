@@ -16,8 +16,8 @@ public class Enemy {
         float x = p.random(0, 600);
         float y = p.random(0, 400);
         enemy = new Ellipse(p, x, y, 20, 20, 255, 0, 0); // Default color: red
-        xVel = 10;
-        yVel = 10;
+        xVel = (int)p.random(1,10);
+        yVel = 15 - xVel;
     }
 
     // Constructor for creating an enemy with random initial position and specified color
