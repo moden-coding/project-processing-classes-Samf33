@@ -45,6 +45,7 @@ public class Bullet {
 
     // SetTarget method calculates the velocity needed to reach a target position
     public void setTarget(float targetX, float targetY) {
+        // All of this is copied
         // Calculate direction vector from current position to target
         float directionX = targetX - x;
         float directionY = targetY - y;

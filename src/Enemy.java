@@ -18,6 +18,8 @@ public class Enemy {
         enemy = new Ellipse(p, x, y, 20, 20, 255, 0, 0); // Default color: red
         xVel = (int)p.random(1,10);
         yVel = 15 - xVel;
+        System.out.println(xVel);
+        System.out.println(yVel);
     }
 
     // Constructor for creating an enemy with random initial position and specified color
@@ -91,7 +93,10 @@ public class Enemy {
 
     // Method to reset the enemy's health and position
     public void reset() {
+        xVel = (int)p.random(1,10);
+        yVel = 15 - xVel;
         health = initialHealth;
-        enemy.setX(700); // Move the enemy to start pos
+        enemy.setX(p.random(100,700)); // Move the enemy to start pos
+        enemy.setY(p.random(100,500));
     }
 }

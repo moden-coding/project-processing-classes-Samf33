@@ -26,6 +26,18 @@ public class Enemies {
             inactive.add(enemy);
         }
     }
+    public void addEnemyWithHealth(int h) {
+        Enemy enemy;
+        // Check if there are inactive enemies available for reuse
+        if (inactive.isEmpty()) {
+            enemy = new Enemy(h, p); // If not add a new enemy
+            enemies.add(enemy);
+        } else {
+            inactive.get(0).reset(); // If yes, reuse an inactive enemy
+            enemies.add(inactive.get(0));
+            inactive.remove(0);
+        }
+    }
 
     // Method to add a regular enemy to the active enemies list
     public void addEnemy() {
@@ -77,7 +89,7 @@ public class Enemies {
 
             // Check if the distance between the player and the enemy is less than the combined radius
             if (distance < combinedRadius) {
-                enemies.get(i).setX(1000); // Move enemy off-screen
+                enemies.remove(i);// Move enemy off-screen
                 return true; // Collision detected
             }
         }
