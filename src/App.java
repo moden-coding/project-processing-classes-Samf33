@@ -18,7 +18,6 @@ public class App extends PApplet {
     int yVel = 0; // y velocity
     Health health; // health bar
     Rectangle gameOver; // play again button
-    // Rectangle freeplay;
     Button freeplay;
     Button campaign;
     PImage heart; // heart itself
